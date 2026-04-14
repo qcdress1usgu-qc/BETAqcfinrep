@@ -913,7 +913,6 @@ LL.Bean,522846,Indigo Ink
     function initTrackerFilters() {
         let fBuyer = document.getElementById('filter_buyer');
         let mappedBuyers = [...new Set(dynamicDB.map(r => r.buyer))].filter(Boolean).sort();
-        
         if(fBuyer.options.length <= 1) {
             fBuyer.innerHTML = '<option value="">-- SEMUA BUYER --</option>' + mappedBuyers.map(b => `<option value="${b}">${b}</option>`).join('');
         }
@@ -960,7 +959,7 @@ LL.Bean,522846,Indigo Ink
     
     function searchTracker() {
         document.getElementById('loading').style.display = 'flex';
-        document.getElementById('loading-text').innerText = "MENGAMBIL DATA REVIEW...";
+        document.getElementById('loading-text').innerText = "MENGAMBIL DATA...";
         
         let tStart = document.getElementById('filter_start').value;
         let tEnd = document.getElementById('filter_end').value;
@@ -988,7 +987,7 @@ LL.Bean,522846,Indigo Ink
 
                 if (finalData.length === 0) {
                     document.getElementById('tracker_chart_card').style.display = 'none';
-                    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px;">Data Review tidak ditemukan pada rentang tersebut.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px;">Data tidak ditemukan pada rentang tersebut.</td></tr>`;
                     return;
                 }
                 
@@ -1009,7 +1008,7 @@ LL.Bean,522846,Indigo Ink
             } else {
                 currentTrackerData = [];
                 document.getElementById('tracker_chart_card').style.display = 'none';
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px;">Data Review tidak ditemukan pada rentang tersebut.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px;">Data tidak ditemukan pada rentang tersebut.</td></tr>`;
             }
         }).catch(err => {
             document.getElementById('loading').style.display = 'none';
