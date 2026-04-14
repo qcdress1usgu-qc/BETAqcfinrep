@@ -509,7 +509,7 @@
     let trackerAnalyticsChart;
     let isAbsentStatus = false;
     let absentReasonText = "";
-    let currentTrackerData = []; // Untuk menyimpan data lokal fitur WA
+    let currentTrackerData = []; 
 
     // ========================================================
     // BOTTOM SHEET LOGIC
@@ -537,7 +537,7 @@
     function switchMainTab(tab) {
         if (tab === 'tracker') {
             Swal.fire({
-                title: 'MASUKKAN PASSWORD SPV',
+                title: 'OTORISASI SUPERVISOR',
                 input: 'password',
                 inputPlaceholder: 'Masukkan Password SPV',
                 inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
@@ -913,6 +913,7 @@ LL.Bean,522846,Indigo Ink
     function initTrackerFilters() {
         let fBuyer = document.getElementById('filter_buyer');
         let mappedBuyers = [...new Set(dynamicDB.map(r => r.buyer))].filter(Boolean).sort();
+        
         if(fBuyer.options.length <= 1) {
             fBuyer.innerHTML = '<option value="">-- SEMUA BUYER --</option>' + mappedBuyers.map(b => `<option value="${b}">${b}</option>`).join('');
         }
@@ -981,7 +982,6 @@ LL.Bean,522846,Indigo Ink
                 let totalInsp = 0, totalDef = 0, totalGood = 0;
                 tbody.innerHTML = '';
                 
-                // Secondary filter if backend doesn't support 'sp' filtering directly yet
                 let finalData = data.data;
                 if(tSP) { finalData = finalData.filter(d => (d.sp && d.sp.toUpperCase() === tSP.toUpperCase()) || !d.sp); }
                 currentTrackerData = finalData;
@@ -1425,7 +1425,7 @@ LL.Bean,522846,Indigo Ink
     // === FITUR BARU: TUTUP SHIFT DENGAN REVIEW & RANDOMIZER ===
     function recapSPV() {
         Swal.fire({
-            title: 'MASUKAN PASSWORD SPV',
+            title: 'OTORISASI SUPERVISOR',
             input: 'password',
             inputPlaceholder: 'Masukkan Password SPV',
             inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
@@ -1472,11 +1472,14 @@ LL.Bean,522846,Indigo Ink
             html: `
                 <div style="font-size:11px; font-weight:bold; margin-bottom:5px; text-align:left; color:var(--text-main);">TARGET TOTAL DEFECT (%)</div>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <input type="number" id="swal-min" placeholder="Min (Cth: 4)" class="swal2-input" style="margin:0; width:50%; height:40px; font-size:13px;">
-                    <input type="number" id="swal-max" placeholder="Max (Cth: 5)" class="swal2-input" style="margin:0; width:50%; height:40px; font-size:13px;">
+                    <input type="number" step="0.1" id="swal-min" placeholder="Min (Cth: 4)" class="swal2-input" style="margin:0; width:50%; height:40px; font-size:13px;">
+                    <input type="number" step="0.1" id="swal-max" placeholder="Max (Cth: 5)" class="swal2-input" style="margin:0; width:50%; height:40px; font-size:13px;">
                 </div>
                 <div style="font-size:11px; font-weight:bold; margin-bottom:5px; text-align:left; color:var(--text-main);">TARGET KHUSUS FINISHING (%)</div>
-                <input type="number" step="0.1" id="swal-fin" placeholder="Cth: 1.2" class="swal2-input" style="margin:0; width:100%; height:40px; font-size:13px; margin-bottom:15px;">
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="number" step="0.1" id="swal-fin-min" placeholder="Min Fin (Cth: 1.0)" class="swal2-input" style="margin:0; width:50%; height:40px; font-size:13px;">
+                    <input type="number" step="0.1" id="swal-fin-max" placeholder="Max Fin (Cth: 1.5)" class="swal2-input" style="margin:0; width:50%; height:40px; font-size:13px;">
+                </div>
                 
                 <div style="text-align:left; font-size:11px; color:var(--text-sub); border: 1px dashed var(--border-line); padding: 8px; border-radius: 6px; background:var(--bg-section);">
                     <b style="color:var(--primary);">RINGKASAN DATA HARI INI (SEBELUM REVIEW):</b><br>
@@ -1495,17 +1498,18 @@ LL.Bean,522846,Indigo Ink
                 return {
                     min: document.getElementById('swal-min').value,
                     max: document.getElementById('swal-max').value,
-                    fin: document.getElementById('swal-fin').value
+                    min_fin: document.getElementById('swal-fin-min').value,
+                    max_fin: document.getElementById('swal-fin-max').value
                 };
             }
         }).then((result) => {
             if(result.isConfirmed) {
-                executeReviewData(result.value.min, result.value.max, result.value.fin);
+                executeReviewData(result.value.min, result.value.max, result.value.min_fin, result.value.max_fin);
             }
         });
     }
 
-    function executeReviewData(min, max, fin) {
+    function executeReviewData(min, max, min_fin, max_fin) {
         if(!SCRIPT_URL) return;
         document.getElementById('loading').style.display = 'flex';
         document.getElementById('loading-text').innerText = "MENGEKSEKUSI REVIEW...";
@@ -1516,7 +1520,8 @@ LL.Bean,522846,Indigo Ink
             password: "FIND1", 
             min_target: min, 
             max_target: max,
-            fin_target: fin 
+            min_fin: min_fin,
+            max_fin: max_fin
         };
 
         fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' }})
