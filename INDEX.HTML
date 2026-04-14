@@ -18,7 +18,8 @@
             --border-line: #cbd5e1; --border-focus: #4338ca;
             --primary: #4338ca; --primary-grad: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
             --accent: #ea580c; --success: #10b981; --danger: #ef4444; 
-            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.1); --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1); --shadow-btn: 0 4px 14px 0 rgba(67, 56, 202, 0.3);
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.1); --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1); 
+            --shadow-btn: 0 4px 14px 0 rgba(67, 56, 202, 0.3); --shadow-top: 0 -4px 15px rgba(0,0,0,0.05);
         }
         .dark-mode {
             --bg-body: #0f172a; --bg-card: #1e293b; --bg-input: #334155; --bg-readonly: #1e293b;
@@ -27,64 +28,87 @@
             --border-line: #475569; --border-focus: #818cf8;
             --primary: #6366f1; --primary-grad: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
             --accent: #f97316; --success: #34d399; --danger: #f87171;
+            --shadow-top: 0 -4px 15px rgba(0,0,0,0.4);
         }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-body); margin: 0; padding-bottom: 180px; font-size: 14px; color: var(--text-main); transition: background-color 0.3s, color 0.3s; user-select: none; -webkit-user-select: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-body); 
+            margin: 0; padding-bottom: 220px; font-size: 14px; color: var(--text-main); 
+            transition: background-color 0.3s, color 0.3s; user-select: none; -webkit-user-select: none; 
+        }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
 
-        .header { background: var(--bg-card); border-bottom: 3px solid var(--primary); box-shadow: var(--shadow-md); padding: 20px 15px; transition: background-color 0.3s; }
+        .header { background: var(--bg-card); border-bottom: 3px solid var(--primary); box-shadow: var(--shadow-md); padding: 16px 15px; position: sticky; top: 0; z-index: 100;}
         .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; }
         .title-area { display: flex; flex-direction: column; cursor: pointer; }
-        .main-title { font-weight: 900; color: var(--text-brand); font-size: 1.3rem; letter-spacing: 1px; }
-        .sub-title { font-size: 10px; color: var(--text-sub); font-weight: bold; letter-spacing: 1.5px; margin-top: 4px; }
+        .main-title { font-weight: 900; color: var(--text-brand); font-size: 1.2rem; letter-spacing: 0.5px; }
+        .sub-title { font-size: 10px; color: var(--text-sub); font-weight: bold; letter-spacing: 1px; margin-top: 4px; }
         .version-badge { background: var(--primary); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; margin-left: 6px; font-weight: 900;}
-        .theme-toggle { background: var(--bg-body); border: 1px solid var(--border-line); color: var(--text-main); border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: 800; display: flex; justify-content: center; align-items: center; cursor: pointer; outline: none; box-shadow: var(--shadow-sm); transition: all 0.2s; letter-spacing: 1px;}
+        .theme-toggle { background: var(--bg-body); border: 1px solid var(--border-line); color: var(--text-main); border-radius: 6px; padding: 8px 12px; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm); transition: all 0.2s; letter-spacing: 1px;}
         
-        .container { padding: 15px; max-width: 800px; margin: 0 auto; }
-        .card { background: var(--bg-card); border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-line); }
-        .input-group { margin-bottom: 16px; position: relative; }
-        label { display: block; font-size: 11px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;}
+        .card { background: var(--bg-card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-line); }
+        
+        .input-group { position: relative; display: flex; flex-direction: column; gap: 6px;}
+        label { font-size: 11px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
         .req::after { content: " *"; color: var(--danger); font-size: 14px;}
-        input, textarea, select { width: 100%; padding: 14px 12px; border: 1px solid var(--border-line); border-radius: 6px; box-sizing: border-box; font-size: 14px; font-weight: 600; background: var(--bg-input); color: var(--text-main); font-family: inherit;}
-        input:focus, textarea:focus, select:focus { border-color: var(--border-focus); outline: none; box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15); }
         
-        input[readonly].clickable { cursor: pointer; background: var(--bg-input); border-style: solid; color: var(--primary); text-align: center; font-size: 16px; }
+        input, textarea, select { width: 100%; padding: 14px 12px; border: 1.5px solid var(--border-line); border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--bg-input); color: var(--text-main); font-family: inherit;}
+        input:focus, textarea:focus, select:focus { border-color: var(--border-focus); outline: none; box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15); background: var(--bg-card);}
+        
+        input[readonly].clickable { cursor: pointer; background: var(--bg-input); border: 1.5px solid var(--primary); color: var(--primary); text-align: center; font-size: 15px; font-weight: 800;}
         input[readonly]:not(.clickable) { background: var(--bg-readonly); font-weight: bold; color: var(--danger); cursor: not-allowed; border-style: dashed; }
         
-        .btn-time { position: absolute; right: 6px; top: 27px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-line); border-radius: 4px; padding: 6px 12px; font-size: 10px; font-weight: bold; cursor: pointer; box-shadow: var(--shadow-sm);}
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        /* Grid Layouts for Mobile Proportion */
+        .grid-full { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        .grid-half { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Absolute button adjust */
+        .input-group.has-btn input { padding-right: 90px; }
+        .btn-time { position: absolute; right: 5px; bottom: 5px; height: calc(100% - 24px); background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-line); border-radius: 6px; padding: 0 12px; font-size: 10px; font-weight: bold; cursor: pointer; box-shadow: var(--shadow-sm);}
+        
         .shift-container { display: flex; align-items: center; gap: 8px; }
         .shift-container input[type="time"] { flex: 1; padding: 12px 10px; text-align: center; }
         .shift-divider { font-weight: 900; color: var(--text-sub); }
 
         .category-tabs { display: flex; gap: 8px; margin-bottom: 16px; background: var(--bg-section); padding: 6px; border-radius: 8px; border: 1px solid var(--border-line); }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 6px; font-weight: 800; font-size: 12px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; border-radius: 6px; font-weight: 800; font-size: 12px; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
         .tab-btn.active { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
         
-        .btn-add { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 13px; letter-spacing: 0.5px; box-shadow: var(--shadow-sm);}
-        .empty-state { text-align: center; padding: 20px; color: var(--text-sub); font-size: 12px; font-weight: bold; border: 2px dashed var(--border-line); border-radius: 8px; background: var(--bg-section);}
+        .btn-add { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 13px; letter-spacing: 0.5px; box-shadow: var(--shadow-sm); margin-top: 14px;}
+        .empty-state { text-align: center; padding: 24px 15px; color: var(--text-sub); font-size: 12px; font-weight: bold; border: 2px dashed var(--border-line); border-radius: 8px; background: var(--bg-section);}
         
-        .summary-card { background: var(--bg-section); border: 1px solid var(--border-line); border-radius: 8px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 12px;}
-        .summary-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-line); padding-bottom: 10px; }
-        .summary-title { font-size: 14px; font-weight: 900; color: var(--primary); display: flex; flex-direction: column;}
+        .summary-card { background: var(--bg-section); border: 1px solid var(--border-line); border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px;}
+        .summary-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-line); padding-bottom: 8px; }
+        .summary-title { font-size: 13px; font-weight: 900; color: var(--primary); display: flex; flex-direction: column;}
         .summary-subtitle { font-size: 11px; color: var(--text-main); font-weight: 700; margin-top: 3px; letter-spacing: 0.5px;}
-        .btn-del { background: var(--bg-card); color: var(--danger); border: 1px solid var(--danger); border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 900; font-size: 12px;}
+        .btn-del { background: var(--bg-card); color: var(--danger); border: 1px solid var(--danger); border-radius: 6px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 900; font-size: 12px;}
 
         .flex-inputs { display: flex; gap: 12px; width: 100%; }
-        .stepper { display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 6px; overflow: hidden; flex: 1; }
-        .stepper button { background: var(--bg-stepper); border: none; width: 45px; height: 40px; font-size: 20px; font-weight: bold; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .stepper input { flex: 1; min-width: 0; border: none; text-align: center; font-weight: 900; padding: 0; height: 40px; color: var(--text-brand); background: transparent; }
-        .stepper input::placeholder { color: var(--text-sub); font-weight: bold; opacity: 0.7; }
+        .stepper { display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 8px; overflow: hidden; flex: 1; height: 46px;}
+        .stepper button { background: var(--bg-stepper); border: none; width: 50px; height: 100%; font-size: 22px; font-weight: bold; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .stepper input { flex: 1; min-width: 0; border: none; text-align: center; font-weight: 900; font-size: 16px; padding: 0; height: 100%; color: var(--text-brand); background: transparent; }
+        .stepper input::placeholder { color: var(--text-sub); font-weight: bold; opacity: 0.7; font-size: 12px;}
         .stepper input:focus { box-shadow: none; }
 
-        .fab-container { position: fixed; right: 15px; bottom: 170px; display: flex; flex-direction: column; gap: 12px; z-index: 999; align-items: flex-end; }
-        .fab-sync { background: var(--danger); color: white; border: none; border-radius: 8px; width: auto; padding: 10px 16px; font-weight: 800; font-size: 11px; display: none; letter-spacing: 0.5px; box-shadow: var(--shadow-md);}
+        /* Floating Action Button (Sync) */
+        .fab-container { position: fixed; right: 15px; bottom: 195px; display: flex; flex-direction: column; gap: 12px; z-index: 999; align-items: flex-end; }
+        .fab-sync { background: var(--danger); color: white; border: none; border-radius: 8px; padding: 12px 18px; font-weight: 800; font-size: 11px; display: none; letter-spacing: 0.5px; box-shadow: var(--shadow-md);}
 
-        .action-buttons { position: fixed; bottom: 15px; left: 15px; right: 15px; max-width: 770px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+        /* Fixed Bottom Action Bar */
+        .action-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: var(--bg-body); border-top: 1px solid var(--border-line); 
+            padding: 12px 15px; padding-bottom: max(12px, env(safe-area-inset-bottom));
+            box-shadow: var(--shadow-top); z-index: 1000;
+        }
+        .action-buttons { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         .row-btns { display: flex; gap: 10px; }
-        .btn-action { flex: 1; border: none; padding: 12px 5px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 0.5px;}
-        .btn-server { background: var(--primary-grad); box-shadow: var(--shadow-btn); font-size: 14px; width: 100%; padding: 14px;}
+        .btn-action { flex: 1; border: none; padding: 14px 8px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 0.5px;}
+        .btn-server { background: var(--primary-grad); box-shadow: var(--shadow-btn); font-size: 14px; width: 100%; padding: 16px;}
         .btn-xl { background: var(--bg-card); color: var(--text-brand); border: 1px solid var(--border-line); box-shadow: var(--shadow-sm);}
         .btn-reset { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-line); box-shadow: var(--shadow-sm);}
         .btn-spv { background: #1e293b; color: #f8fafc; border: 1px solid #0f172a; box-shadow: var(--shadow-sm);}
@@ -93,8 +117,8 @@
         .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .chart-container { display: flex; align-items: center; justify-content: center; gap: 20px; background: var(--bg-section); padding: 20px; border-radius: 8px; border: 1px solid var(--border-line); margin-bottom: 20px; }
-        .chart-box { width: 110px; height: 110px; position: relative; }
+        .chart-container { display: flex; align-items: center; justify-content: space-evenly; gap: 15px; background: var(--bg-section); padding: 20px 10px; border-radius: 12px; border: 1px solid var(--border-line); margin-bottom: 20px; }
+        .chart-box { width: 100px; height: 100px; position: relative; flex-shrink: 0;}
         .chart-details { display: flex; flex-direction: column; gap: 4px; }
         .chart-title { font-size: 11px; font-weight: 900; color: var(--text-sub); letter-spacing: 1px; }
         .chart-pct { font-size: 26px; font-weight: 900; color: var(--danger); margin-bottom: 5px;}
@@ -102,22 +126,29 @@
         .legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block;}
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.85); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-box { background: var(--bg-card); width: 90%; max-width: 400px; border-radius: 12px; padding: 20px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 15px; }
+        .modal-box { background: var(--bg-card); width: 92%; max-width: 400px; border-radius: 12px; padding: 20px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 15px; }
         .modal-title { font-weight: 900; color: var(--primary); font-size: 16px; text-align: center; border-bottom: 2px solid var(--border-line); padding-bottom: 10px;}
-        .line-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 45px; padding: 10px; background: var(--bg-input); border-radius: 8px; border: 1px dashed var(--border-line); align-items: center;}
+        .line-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 48px; padding: 10px; background: var(--bg-input); border-radius: 8px; border: 1px dashed var(--border-line); align-items: center;}
         .line-tag { background: var(--primary); color: white; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 8px;}
-        .line-tag span { cursor: pointer; color: #ffb3b3; font-weight: 900; padding: 0 4px;}
+        .line-tag span { cursor: pointer; color: #ffb3b3; font-weight: 900; padding: 0 4px; font-size: 15px;}
         
-        .grid-numbers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        .num-btn { background: var(--bg-section); border: 1px solid var(--border-line); padding: 12px 0; border-radius: 6px; font-weight: 900; color: var(--text-main); cursor: pointer; font-size: 14px;}
+        .grid-numbers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .num-btn { background: var(--bg-section); border: 1px solid var(--border-line); padding: 14px 0; border-radius: 8px; font-weight: 900; color: var(--text-main); cursor: pointer; font-size: 15px;}
         .num-btn.selected { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2); }
         
-        .grid-suffix { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px; }
-        .suf-btn { background: var(--bg-section); border: 1px solid var(--border-line); padding: 12px; border-radius: 6px; font-weight: 900; color: var(--text-main); cursor: pointer; font-size: 13px;}
+        .grid-suffix { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
+        .suf-btn { background: var(--bg-section); border: 1px solid var(--border-line); padding: 14px; border-radius: 8px; font-weight: 900; color: var(--text-main); cursor: pointer; font-size: 14px;}
         .suf-btn.selected { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2); }
         
-        .btn-add-line { background: var(--bg-input); color: var(--primary); border: 2px solid var(--primary); padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; flex: 1;}
-        .btn-save-line { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; flex: 2;}
+        .btn-add-line { background: var(--bg-input); color: var(--primary); border: 2px solid var(--primary); padding: 14px; border-radius: 8px; font-weight: 900; cursor: pointer; flex: 1;}
+        .btn-save-line { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 900; cursor: pointer; flex: 2;}
+
+        /* Media Queries minimalis untuk memastikan rapi di layar lebih lebar dari HP */
+        @media (min-width: 600px) {
+            .grid-full { grid-template-columns: 1fr 1fr; }
+            .grid-half { grid-template-columns: 1fr 1fr; }
+            .card { padding: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -148,7 +179,7 @@
 
 <div class="container">
     <div class="card">
-        <div class="grid">
+        <div class="grid-full">
             <div class="input-group">
                 <label class="req">NAMA QC / INSPECTOR:</label>
                 <input type="text" id="nama_qc" list="qcList" placeholder="Ketik atau Pilih QC" oninput="saveData()">
@@ -161,19 +192,25 @@
                     <option value="WASHING">WASHING</option>
                 </select>
             </div>
-            
+        </div>
+
+        <div class="grid-half" style="margin-top: 14px;">
             <div class="input-group"><label class="req">TANGGAL:</label><input type="date" id="tanggal" onchange="saveData()"></div>
-            <div class="input-group">
+            <div class="input-group has-btn">
                 <label>JAM UPDATE:</label>
                 <input type="text" id="jam" placeholder="Cth: 15.30" oninput="saveData()">
                 <button class="btn-time" onclick="setNow()">SEKARANG</button>
             </div>
-            
+        </div>
+        
+        <div class="grid-full" style="margin-top: 14px;">
             <div class="input-group">
                 <label class="req">NAMA LINE:</label>
                 <input type="text" id="line_name" class="clickable" placeholder="Ketuk Pilih Line" readonly onclick="openLineModal()">
             </div>
+        </div>
 
+        <div class="grid-half" style="margin-top: 14px;">
             <div class="input-group">
                 <label class="req">ORDER/BUYER:</label>
                 <select id="buyer" onchange="updateDropdowns('buyer'); saveData()">
@@ -186,13 +223,15 @@
                     <option value="" disabled selected>-- Pilih Style --</option>
                 </select>
             </div>
+        </div>
+
+        <div class="grid-full" style="margin-top: 14px;">
             <div class="input-group">
                 <label class="req">COLOR:</label>
                 <select id="color" onchange="saveData()">
                     <option value="" disabled selected>-- Pilih Color --</option>
                 </select>
             </div>
-
             <div class="input-group">
                 <label class="req">SHIFT: <span id="shift_hours" style="color:var(--primary); font-weight:900;"></span></label>
                 <div class="shift-container">
@@ -214,14 +253,14 @@
     </div>
 
     <div class="card" id="add-defect-section">
-        <label style="border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--primary); font-weight: 800;">TAMBAH DEFECT BARU:</label>
+        <label style="border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--primary); font-weight: 800; display: block;">TAMBAH DEFECT BARU:</label>
         
         <div class="category-tabs">
             <button class="tab-btn active" id="tab_sewing" onclick="switchCategory('SEWING')">SEWING</button>
             <button class="tab-btn" id="tab_finishing" onclick="switchCategory('FINISHING')">FINISHING</button>
         </div>
 
-        <div class="grid">
+        <div class="grid-half">
             <div class="input-group">
                 <label>1. PILIH AREA / PROSES:</label>
                 <select id="sel_area" onchange="populateType()">
@@ -236,23 +275,21 @@
             </div>
         </div>
         
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-add" style="flex: 3;" onclick="addDefectToList()">TAMBAHKAN</button>
-        </div>
+        <button class="btn-add" onclick="addDefectToList()">TAMBAHKAN DEFECT</button>
     </div>
 
     <div class="card" id="summary-section">
-        <label style="border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--accent); font-weight: 800;">DAFTAR RANGKUMAN DEFECT:</label>
+        <label style="border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--accent); font-weight: 800; display: block;">DAFTAR RANGKUMAN DEFECT:</label>
         <div id="active_defects_container">
             <div class="empty-state" id="empty_state">
                 BELUM ADA DEFECT YANG DITAMBAHKAN.<br>
-                <span style="font-weight:normal; font-size:11px;">Silakan pilih Area & Jenis di atas lalu klik Tambahkan.</span>
+                <span style="font-weight:normal; font-size:11px; display:block; margin-top:6px;">Silakan pilih Area & Jenis di atas lalu klik Tambahkan.</span>
             </div>
         </div>
     </div>
 
     <div class="card" id="kalkulasi-section">
-        <label style="border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--primary); font-weight: 800;">KALKULASI (OTOMATIS & MANUAL):</label>
+        <label style="border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--primary); font-weight: 800; display: block;">KALKULASI (OTOMATIS & MANUAL):</label>
         
         <div class="chart-container">
             <div class="chart-box">
@@ -266,10 +303,10 @@
             </div>
         </div>
 
-        <div class="grid">
-            <div class="input-group" style="grid-column: span 2;">
+        <div class="grid-full">
+            <div class="input-group">
                 <label class="req" style="color:var(--success);">QTY GOOD QC (TOTAL LULUS):</label>
-                <input type="number" id="qty_good" oninput="formatAntiMinus(this); calculate()" placeholder="Isi Total Good" style="text-align: center; font-size: 18px; padding: 18px; color: var(--success);">
+                <input type="number" id="qty_good" oninput="formatAntiMinus(this); calculate()" placeholder="Isi Total Good" style="text-align: center; font-size: 18px; padding: 16px; color: var(--success); font-weight: 900;">
             </div>
             
             <input type="hidden" id="tot_def" value="0">
@@ -283,15 +320,17 @@
     <button class="fab-sync" id="btnSync" onclick="pushOfflineData()">SINKRON (0)</button>
 </div>
 
-<div class="action-buttons">
-    <button class="btn-action btn-server" id="btnSubmitMain" onclick="showSummaryAndSubmit()">CONFIRM & SUBMIT</button>
-    <div class="row-btns">
-        <button class="btn-action btn-reset" style="background:var(--danger); color:white; border-color:var(--danger);" onclick="markAbsent()">TIDAK BERANGKAT</button>
-        <button class="btn-action btn-reset" onclick="resetForm()">RESET</button>
-    </div>
-    <div class="row-btns">
-        <button class="btn-action btn-xl" onclick="exportToExcel()">EXCEL</button>
-        <button class="btn-action btn-spv" onclick="recapSPV()">🔐 TUTUP SHIFT</button>
+<div class="action-bar">
+    <div class="action-buttons">
+        <button class="btn-action btn-server" id="btnSubmitMain" onclick="showSummaryAndSubmit()">CONFIRM & SUBMIT</button>
+        <div class="row-btns">
+            <button class="btn-action btn-reset" style="background:var(--danger); color:white; border-color:var(--danger);" onclick="markAbsent()">TIDAK BERANGKAT</button>
+            <button class="btn-action btn-reset" onclick="resetForm()">RESET FORMULIR</button>
+        </div>
+        <div class="row-btns">
+            <button class="btn-action btn-xl" onclick="exportToExcel()">DOWNLOAD EXCEL</button>
+            <button class="btn-action btn-spv" onclick="recapSPV()">🔐 TUTUP SHIFT</button>
+        </div>
     </div>
 </div>
 
@@ -299,7 +338,7 @@
     <div class="modal-box">
         <div class="modal-title">PILIH NAMA LINE</div>
         <div class="line-tags" id="lineTags"></div>
-        <label style="margin-top:10px;">1. PILIH ANGKA:</label>
+        <label style="margin-top:5px;">1. PILIH ANGKA:</label>
         <div class="grid-numbers" id="gridNumbers"></div>
         <label style="margin-top:10px;">2. TAMBAHAN HURUF (JIKA ADA):</label>
         <div class="grid-suffix" id="gridSuffix"></div>
@@ -835,7 +874,7 @@ LL.Bean,522846,Indigo Ink
                 </div>
             </div>`;
         }
-        if(count === 0) container.innerHTML = `<div class="empty-state" id="empty_state">BELUM ADA DEFECT YANG DITAMBAHKAN.<br><span style="font-weight:normal; font-size:11px;">Silakan pilih Area & Jenis di atas lalu klik Tambahkan.</span></div>`;
+        if(count === 0) container.innerHTML = `<div class="empty-state" id="empty_state">BELUM ADA DEFECT YANG DITAMBAHKAN.<br><span style="font-weight:normal; font-size:11px; display:block; margin-top:6px;">Silakan pilih Area & Jenis di atas lalu klik Tambahkan.</span></div>`;
         else container.innerHTML = html;
         calculate();
     }
