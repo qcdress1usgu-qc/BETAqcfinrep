@@ -409,7 +409,7 @@
             </div>
         </div>
 
-        <div class="grid-half">
+        <div class="grid-half" style="margin-bottom: 14px;">
             <div class="input-group">
                 <label>COLOR:</label>
                 <select id="filter_color"><option value="">-- SEMUA COLOR --</option></select>
@@ -420,6 +420,17 @@
                     <option value="">-- SEMUA PROSES --</option>
                     <option value="WASHING">WASHING</option>
                     <option value="NON WASHING">NON WASHING</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-full">
+            <div class="input-group">
+                <label>STATUS DATA:</label>
+                <select id="filter_status">
+                    <option value="">-- TAMPILKAN SEMUA STATUS --</option>
+                    <option value="ASLI">HANYA DATA ASLI (SEBELUM REVIEW)</option>
+                    <option value="REV">HANYA DATA REVIEW (SETELAH REVIEW)</option>
                 </select>
             </div>
         </div>
@@ -446,7 +457,7 @@
         <div id="tracker_table_wrapper" style="overflow-x: auto; display: block;">
             <table class="tracker-table">
                 <thead>
-                    <tr><th>TANGGAL</th><th>QC</th><th>LINE</th><th>BUYER</th><th>STYLE</th><th>COLOR</th><th>INSPECT</th><th>DEFECT</th><th>GOOD</th><th>%</th></tr>
+                    <tr><th>TANGGAL</th><th>QC / STATUS</th><th>LINE</th><th>BUYER</th><th>STYLE</th><th>COLOR</th><th>INSPECT</th><th>DEFECT</th><th>GOOD</th><th>%</th></tr>
                 </thead>
                 <tbody id="tracker_body">
                     <tr><td colspan="10" style="text-align:center; padding:20px; font-weight:bold; color:var(--text-sub);">Silakan sesuaikan filter dan klik TAMPILKAN DATA.</td></tr>
@@ -967,6 +978,7 @@ LL.Bean,522846,Indigo Ink
         let tStyle = document.getElementById('filter_style').value;
         let tColor = document.getElementById('filter_color').value;
         let tSP = document.getElementById('filter_sp').value;
+        let tStatus = document.getElementById('filter_status').value; 
         
         const payload = { action: "get_tracker", start_date: tStart, end_date: tEnd, buyer: tBuyer, style: tStyle, color: tColor, sp: tSP };
         
@@ -983,6 +995,9 @@ LL.Bean,522846,Indigo Ink
                 
                 let finalData = data.data;
                 if(tSP) { finalData = finalData.filter(d => (d.sp && d.sp.toUpperCase() === tSP.toUpperCase()) || !d.sp); }
+                
+                if(tStatus) { finalData = finalData.filter(d => d.qc && d.qc.includes(`[${tStatus}]`)); }
+                
                 currentTrackerData = finalData;
 
                 if (finalData.length === 0) {
@@ -996,7 +1011,14 @@ LL.Bean,522846,Indigo Ink
                     totalDef += parseInt(d.def) || 0;
                     totalGood += parseInt(d.good) || 0;
                     
-                    tbody.innerHTML += `<tr><td>${d.tanggal}</td><td>${d.qc}</td><td>${d.line}</td><td>${d.buyer}</td><td>${d.style}</td><td>${d.color}</td><td style="font-weight:bold;">${d.insp}</td><td style="color:var(--danger); font-weight:bold;">${d.def}</td><td style="color:var(--success); font-weight:bold;">${d.good}</td><td>${d.pct}</td></tr>`;
+                    let qcLabel = d.qc;
+                    if(qcLabel.includes("[REV]")) {
+                        qcLabel = `<span style="background:var(--primary); color:white; padding:3px 6px; border-radius:4px; font-size:10px;">REV</span> ${qcLabel.replace('[REV]', '').trim()}`;
+                    } else if(qcLabel.includes("[ASLI]")) {
+                        qcLabel = `<span style="background:var(--accent); color:white; padding:3px 6px; border-radius:4px; font-size:10px;">ASLI</span> ${qcLabel.replace('[ASLI]', '').trim()}`;
+                    }
+
+                    tbody.innerHTML += `<tr><td>${d.tanggal}</td><td>${qcLabel}</td><td>${d.line}</td><td>${d.buyer}</td><td>${d.style}</td><td>${d.color}</td><td style="font-weight:bold;">${d.insp}</td><td style="color:var(--danger); font-weight:bold;">${d.def}</td><td style="color:var(--success); font-weight:bold;">${d.good}</td><td>${d.pct}</td></tr>`;
                 });
                 
                 document.getElementById('tracker_chart_card').style.display = 'block';
@@ -1059,20 +1081,32 @@ LL.Bean,522846,Indigo Ink
         let tStyle = document.getElementById('filter_style').value || "SEMUA STYLE";
         let tColor = document.getElementById('filter_color').value || "SEMUA COLOR";
         let tSP = document.getElementById('filter_sp').value || "SEMUA PROSES";
+        let tStatus = document.getElementById('filter_status').value;
 
         let totalInsp = 0, totalDef = 0, totalGood = 0;
         let listText = "";
+        let hasRev = false;
         
         currentTrackerData.forEach((d, i) => {
             totalInsp += parseInt(d.insp) || 0;
             totalDef += parseInt(d.def) || 0;
             totalGood += parseInt(d.good) || 0;
-            listText += `${i+1}. ${d.tanggal} | L.${d.line} | Insp:${d.insp} | Def:${d.def} (${d.pct})\n`;
+            
+            if(d.qc.includes('[REV]')) hasRev = true;
+            
+            // Bersihkan tag HTML dan string [REV] / [ASLI] secara total
+            let rawQc = d.qc.replace(/<[^>]*>?/gm, '').replace(/\[REV\]/g, '').replace(/\[ASLI\]/g, '').trim(); 
+            listText += `${i+1}. ${d.tanggal} | L.${d.line} | ${rawQc} | Insp:${d.insp} | Def:${d.def} (${d.pct})\n`;
         });
 
         let overallPct = totalInsp > 0 ? ((totalDef/totalInsp)*100).toFixed(1) + "%" : "0%";
 
-        let text = `*REPORT QC FINISHING*\n`;
+        let title = "*REPORT QC FINISHING*";
+        if (tStatus === "REV" || hasRev) {
+             title = "*REPORT QC FINISHING (AFTER REVIEW)*";
+        }
+
+        let text = `${title}\n`;
         text += `Periode: ${tStart} s/d ${tEnd}\n`;
         text += `Buyer: ${tBuyer}\n`;
         text += `Style: ${tStyle}\n`;
@@ -1421,7 +1455,6 @@ LL.Bean,522846,Indigo Ink
         });
     }
 
-    // === FITUR BARU: TUTUP SHIFT DENGAN REVIEW & RANDOMIZER ===
     function recapSPV() {
         Swal.fire({
             title: 'OTORISASI SUPERVISOR',
