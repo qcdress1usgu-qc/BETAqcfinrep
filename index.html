@@ -439,9 +439,17 @@
     </div>
 
     <div class="card" id="tracker_chart_card" style="display: none;">
-        <label style="border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--primary); font-weight: 800; display: block;">ANALITIK DATA</label>
-        <div style="height: 200px; position: relative;">
-            <canvas id="trackerAnalyticsChart"></canvas>
+        <label style="border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; font-size: 12px; color: var(--primary); font-weight: 800; display: block;">ANALITIK AKUMULASI TRACKER</label>
+        <div class="chart-container">
+            <div class="chart-box">
+                <canvas id="trackerAnalyticsChart"></canvas>
+            </div>
+            <div class="chart-details">
+                <div class="chart-title">DEFECT RATE AKUMULASI</div>
+                <div class="chart-pct" id="tracker_chart_pct">0%</div>
+                <div class="chart-legend"><span class="legend-dot" style="background:var(--success);"></span> GOOD : <span id="tracker_chart_good">0 (0%)</span></div>
+                <div class="chart-legend"><span class="legend-dot" style="background:var(--danger);"></span> DEFECT : <span id="tracker_chart_def">0</span></div>
+            </div>
         </div>
     </div>
     
@@ -512,6 +520,7 @@
 <script>
     document.addEventListener('contextmenu', event => event.preventDefault()); 
 
+    // URL TIDAK DIUBAH SAMA SEKALI
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlQvxFIv490sHvIYdzcAWMu8ezzs3xOVPPWJy3Ejfq603bFDNqpA-nvJwFzQDe03PewA/exec"; 
     const APP_VERSION = "1.6"; 
     document.getElementById('verBadge').innerText = "v" + APP_VERSION;
@@ -548,7 +557,7 @@
     function switchMainTab(tab) {
         if (tab === 'tracker') {
             Swal.fire({
-                title: 'OTORISASI SUPERVISOR',
+                title: 'PASSWORD',
                 input: 'password',
                 inputPlaceholder: 'Masukkan Password SPV',
                 inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
@@ -615,7 +624,9 @@ CK NA,44C148G,Billowing Sail
 ,,Estate Blue
 ,,Plein Air
 ,47H101G,Dusted Fox
+,,Brilliant White
 ,47H129G,Brilliant White
+,,Plein Air
 ,47H693G,Blue Beverly
 ,47H688G,Still Water
 ,47H012G,Brilliant White
@@ -633,6 +644,8 @@ CK NA,44C148G,Billowing Sail
 ,LV04RH100G,Brilliant White
 ,,Roasted Cashew
 ,4RH100G,Brilliant White
+,,CASHEW
+,,MOONLIGHT
 ,4RH102G,Winter Blue
 PERRY ELLIS,4KFW7005,Ashleigh Blue
 ,,Dark Sapphire
@@ -1021,8 +1034,17 @@ LL.Bean,522846,Indigo Ink
                     tbody.innerHTML += `<tr><td>${d.tanggal}</td><td>${qcLabel}</td><td>${d.line}</td><td>${d.buyer}</td><td>${d.style}</td><td>${d.color}</td><td style="font-weight:bold;">${d.insp}</td><td style="color:var(--danger); font-weight:bold;">${d.def}</td><td style="color:var(--success); font-weight:bold;">${d.good}</td><td>${d.pct}</td></tr>`;
                 });
                 
+                // MENGUPDATE TEKS ANALITIK SEBELUM RENDER CHART
+                let overallPctStr = totalInsp > 0 ? ((totalDef / totalInsp) * 100).toFixed(1) + "%" : "0%";
+                let goodPctStr = totalInsp > 0 ? ((totalGood / totalInsp) * 100).toFixed(1) + "%" : "0%";
+
+                document.getElementById('tracker_chart_pct').innerText = overallPctStr;
+                document.getElementById('tracker_chart_pct').style.color = totalDef > 0 ? "var(--danger)" : "var(--success)";
+                document.getElementById('tracker_chart_good').innerText = `${totalGood} (${goodPctStr})`;
+                document.getElementById('tracker_chart_def').innerText = totalDef;
+
                 document.getElementById('tracker_chart_card').style.display = 'block';
-                renderTrackerChart([totalGood, totalDef], ['Good', 'Total Defect']);
+                renderTrackerChart([totalGood, totalDef]);
                 
                 document.getElementById('tracker_table_wrapper').style.display = 'block';
                 document.getElementById('toggleTableBtn').innerText = 'SEMBUNYIKAN';
@@ -1038,22 +1060,22 @@ LL.Bean,522846,Indigo Ink
         });
     }
 
-    function renderTrackerChart(dataVals, labels) {
+    // UPDATE: MENGGUNAKAN GRAFIK DOUGHNUT YANG PREMIUM
+    function renderTrackerChart(dataVals) {
         const ctx = document.getElementById('trackerAnalyticsChart').getContext('2d');
         if(trackerAnalyticsChart) { trackerAnalyticsChart.destroy(); }
         
         trackerAnalyticsChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'doughnut',
             data: {
-                labels: labels,
+                labels: ['Good', 'Defect'],
                 datasets: [{
-                    label: 'Total QTY',
                     data: dataVals,
                     backgroundColor: ['#10b981', '#ef4444'],
-                    borderRadius: 6
+                    borderWidth: 0
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
         });
     }
 
@@ -1094,7 +1116,6 @@ LL.Bean,522846,Indigo Ink
             
             if(d.qc.includes('[REV]')) hasRev = true;
             
-            // Bersihkan tag HTML dan string [REV] / [ASLI] secara total
             let rawQc = d.qc.replace(/<[^>]*>?/gm, '').replace(/\[REV\]/g, '').replace(/\[ASLI\]/g, '').trim(); 
             listText += `${i+1}. ${d.tanggal} | L.${d.line} | ${rawQc} | Insp:${d.insp} | Def:${d.def} (${d.pct})\n`;
         });
@@ -1221,7 +1242,7 @@ LL.Bean,522846,Indigo Ink
             "INSEAM/OUTSEAM": typeSewingGeneral, "LINING": typeSewingGeneral, "MAIN LABEL/CARE LABEL": typeSewingGeneral,
             "MANSET": typeSewingGeneral, "OVERLOOK": typeSewingGeneral, "POCKET": typeSewingGeneral,
             "SHOULDER": typeSewingGeneral, "SIDE SEAM": typeSewingGeneral, "SLEEVE": typeSewingGeneral,
-            "SLIT": typeSewingGeneral, "STEAM/IRONING": typeSewingGeneral, "WAIST": typeSewingGeneral
+            "SLIT/VENT": typeSewingGeneral, "STEAM/IRONING": typeSewingGeneral, "WAIST": typeSewingGeneral
         },
         "FINISHING": {
             "BUTTON": ["BROKEN", "MISSING"], "BUTTON HOLE": ["BROKEN"], "HAND MADE": ["BROKEN", "MISSING"],
@@ -1457,7 +1478,7 @@ LL.Bean,522846,Indigo Ink
 
     function recapSPV() {
         Swal.fire({
-            title: 'OTORISASI SUPERVISOR',
+            title: 'PASSWORD',
             input: 'password',
             inputPlaceholder: 'Masukkan Password SPV',
             inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
@@ -1608,11 +1629,65 @@ LL.Bean,522846,Indigo Ink
 
     function executeSendToServer(line) {
         if(SCRIPT_URL.includes("ISI_DENGAN_LINK")) { fallbackOffline(line, {}); return; }
+        
+        let payload = constructPayload(line);
+        
         let btnSub = document.getElementById('btnSubmitMain');
         btnSub.disabled = true; btnSub.innerHTML = 'MENGIRIM...';
         document.getElementById('loading').style.display = 'flex';
         document.getElementById('loading-text').innerText = "SYNC TO CLOUD...";
 
+        fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' }})
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('loading').style.display = 'none'; btnSub.disabled = false; btnSub.innerHTML = 'CONFIRM & SUBMIT';
+            
+            if(data.result === "success") { 
+                Swal.fire('Sukses', isAbsentStatus ? 'Laporan ketidakhadiran tersimpan!' : 'Data Finishing berhasil diakumulasikan!', 'success').then(() => { clearAfterSubmit(); }); 
+            } else if(data.result === "duplicate") {
+                // FITUR BARU: WARNING JIKA DATA SUDAH ADA
+                Swal.fire({
+                    title: 'DATA SUDAH ADA!',
+                    html: 'Peringatan: Data dengan kombinasi ini sudah ada di sistem. <b>Mohon teliti kembali dan isi data lainnya jika ada.</b><br><br>Apakah Anda yakin ingin <b>tetap menumpuk/mengakumulasi</b> data ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#1e3a8a',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'YA, TETAP KIRIM',
+                    cancelButtonText: 'BATAL'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        payload.force_submit = true;
+                        forceSubmitToServer(payload);
+                    }
+                });
+            } else if(data.error === "VERSION_MISMATCH") {
+                Swal.fire('Versi Usang!', 'Aplikasi yang Anda gunakan sudah usang. Silakan minta file HTML versi terbaru ke SPV Anda.', 'error');
+            } else { Swal.fire('Error', 'Gagal dari server: ' + data.error, 'error'); }
+        }).catch(err => { 
+            document.getElementById('loading').style.display = 'none'; btnSub.disabled = false; btnSub.innerHTML = 'CONFIRM & SUBMIT';
+            fallbackOffline(line, payload);
+        });
+    }
+
+    function forceSubmitToServer(payload) {
+        document.getElementById('loading').style.display = 'flex';
+        document.getElementById('loading-text').innerText = "MEMAKSA KIRIM DATA...";
+        
+        fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' }})
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('loading').style.display = 'none';
+            if(data.result === "success") { 
+                Swal.fire('Sukses', 'Data berhasil ditambahkan secara paksa!', 'success').then(() => { clearAfterSubmit(); }); 
+            } else { Swal.fire('Error', 'Gagal dari server: ' + data.error, 'error'); }
+        }).catch(err => {
+            document.getElementById('loading').style.display = 'none';
+            fallbackOffline(payload.line_name, payload);
+        });
+    }
+
+    function constructPayload(line) {
         let defectsArray = [];
         for(let key in activeDefects) {
             let item = activeDefects[key];
@@ -1622,7 +1697,7 @@ LL.Bean,522846,Indigo Ink
         const d = new Date();
         const currentJam = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
-        const payload = {
+        return {
             action: "submit", version: APP_VERSION, nama_qc: document.getElementById('nama_qc').value,
             tanggal: document.getElementById('tanggal').value, jam: currentJam, line_name: line, 
             buyer: document.getElementById('buyer').value || "-", style: document.getElementById('style').value || "-", color: document.getElementById('color').value || "-", 
@@ -1635,22 +1710,9 @@ LL.Bean,522846,Indigo Ink
             pct_def: isAbsentStatus ? "0%" : document.getElementById('pct_def').value, 
             defects: isAbsentStatus ? [] : defectsArray,
             status_absen: isAbsentStatus ? "TIDAK BERANGKAT" : "HADIR",
-            alasan: isAbsentStatus ? absentReasonText : "-"
+            alasan: isAbsentStatus ? absentReasonText : "-",
+            force_submit: false // default false
         };
-
-        fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' }})
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('loading').style.display = 'none'; btnSub.disabled = false; btnSub.innerHTML = 'CONFIRM & SUBMIT';
-            if(data.result === "success") { 
-                Swal.fire('Sukses', isAbsentStatus ? 'Laporan ketidakhadiran tersimpan!' : 'Data Finishing berhasil diakumulasikan!', 'success').then(() => { clearAfterSubmit(); }); 
-            } else if(data.error === "VERSION_MISMATCH") {
-                Swal.fire('Versi Usang!', 'Aplikasi yang Anda gunakan sudah usang. Silakan minta file HTML versi terbaru ke SPV Anda.', 'error');
-            } else { Swal.fire('Error', 'Gagal dari server: ' + data.error, 'error'); }
-        }).catch(err => { 
-            document.getElementById('loading').style.display = 'none'; btnSub.disabled = false; btnSub.innerHTML = 'CONFIRM & SUBMIT';
-            fallbackOffline(line, payload);
-        });
     }
 
     function fallbackOffline(line, payload) {
